@@ -13,10 +13,6 @@ import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.util.Scanner;
 
-/**
- *
- * @author uzairleo
- */
 class counting {
 
     public static void main(String[] args) 

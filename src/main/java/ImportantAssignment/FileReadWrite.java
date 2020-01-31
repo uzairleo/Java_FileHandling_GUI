@@ -12,10 +12,6 @@ import java.util.Scanner;
 import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
 
-/**
- *
- * @author uzairleo
- */
 public class FileReadWrite implements ActionListener {
 
     JFrame frame = new JFrame();
