@@ -6,10 +6,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
-/**
- *
- * @author uzairleo
- */
 public class BeforeAssignment {//practice before doing the Assignment
 
     public static void main(String[] args) {
