@@ -51,7 +51,7 @@ public class GuiFileHandling implements ActionListener {
     public void actionPerformed(ActionEvent e) {
        //for Browse button
         if (e.getSource() == browse) {
-            System.out.println("Browse...");
+            System.out.println("Browse");
             chooser = new JFileChooser(FileSystemView.getFileSystemView());
             int d = chooser.showOpenDialog(null);
             if (d == JFileChooser.APPROVE_OPTION) {
@@ -73,7 +73,7 @@ public class GuiFileHandling implements ActionListener {
                 }
             } else 
                 if (d == JFileChooser.CANCEL_OPTION) {
-                System.out.println("Cancelled ..");
+                System.out.println("Cancelled ");
             }
             //for saveAs
         } else if (e.getSource() == saveAs) {
@@ -99,8 +99,10 @@ public class GuiFileHandling implements ActionListener {
         } else if (e.getSource() == reset) {
             area.setText("");
             
-            //for save
-        } else if (e.getSource() == save) {
+           
+        } else 
+         //for save
+        if (e.getSource() == save) {
             String data = area.getText();
             path = chooser.getSelectedFile().getAbsolutePath();
             try {
