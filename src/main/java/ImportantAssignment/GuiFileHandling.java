@@ -237,8 +237,8 @@ public class GuiFileHandling implements ActionListener {
                         + "---------------------------------------\n\n"
                         + "Total word count = " + countWord + "\n"
                         + "---------------------------------------\n\n"
-                        + "Total number of characters = " + characterCount + "\n"
-                        + "---------------------------------------\n\n"
+                        + "Total number of characters = " + (characterCount-whitespaceCount) + "\n"//for pure character count we can also subtract whitespaces from it like 
+                        + "---------------------------------------\n\n"         //(characterCount-whitespaceCount) it will give us actual character without spaces
                         + "Number of paragraphs = " + paragraphCount + "\n"
                         + "---------------------------------------\n\n"
                         + "Total number of whitespaces = " + whitespaceCount+"\n"
