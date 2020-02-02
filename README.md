@@ -1,2 +1,2 @@
 # Java_FileHandling_GUI
-![ouput](output.png)
+![database](database.png)
