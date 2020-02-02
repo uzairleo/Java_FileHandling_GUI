@@ -3,6 +3,9 @@ package ImportantAssignment;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
 import java.util.Scanner;
 import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
@@ -17,8 +20,21 @@ public class GuiFileHandling implements ActionListener {
     JButton save = new JButton("Save");
     JButton reset = new JButton("Reset");
     JButton count = new JButton("Count");
+    JButton database = new JButton("MySQL");
     JTextArea resultArea = new JTextArea(30, 60);
     String path = "";
+
+    int countVowels = 0;
+    int aa = 0, ee = 0, ii = 0, oo = 0, uu = 0;
+    int consonants = 0;
+    int whitespaces = 0;
+    int sentence = 1;
+    int countWord = 0;
+    int sentenceCount = 0;
+    int characterCount = 0;
+    int paragraphCount = 1;
+    int whitespaceCount = 0;
+//          
 
     JFileChooser chooser;
 
@@ -34,6 +50,9 @@ public class GuiFileHandling implements ActionListener {
         frame.add(count);
         frame.add(pane);
         frame.add(resultArea);
+        frame.add(database);
+
+        database.addActionListener(this);
         browse.addActionListener(this);
         save.addActionListener(this);
         reset.addActionListener(this);
@@ -42,14 +61,13 @@ public class GuiFileHandling implements ActionListener {
 
     }
 
-    public static void main(String[] args) 
-    {
+    public static void main(String[] args) {
         new GuiFileHandling();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-       //for Browse button
+        //for Browse button
         if (e.getSource() == browse) {
             System.out.println("Browse");
             chooser = new JFileChooser(FileSystemView.getFileSystemView());
@@ -67,12 +85,10 @@ public class GuiFileHandling implements ActionListener {
                     }
                     area.setText(data);
                     myReader.close();
-                } 
-                catch (FileNotFoundException ex) {
+                } catch (FileNotFoundException ex) {
                     System.out.println("An error occurred.");
                 }
-            } else 
-                if (d == JFileChooser.CANCEL_OPTION) {
+            } else if (d == JFileChooser.CANCEL_OPTION) {
                 System.out.println("Cancelled ");
             }
             //for saveAs
@@ -98,167 +114,220 @@ public class GuiFileHandling implements ActionListener {
             //for reset
         } else if (e.getSource() == reset) {
             area.setText("");
-            
-           
-        } else 
-         //for save
-        if (e.getSource() == save) {
-            String data = area.getText();
-            path = chooser.getSelectedFile().getAbsolutePath();
-            try {
-                FileWriter myWriter = new FileWriter(path);
-                // Writes this content into the specified file
-                myWriter.write(data);
-                // Closing is necessary to retrieve the resources allocated
-                myWriter.close();
-                JOptionPane.showMessageDialog(null, "Successfully wrote to the file.");
-            } catch (IOException ex) {
-                System.out.println("An error occurred.");
-            }
-            //for Count
-        } else if (e.getSource() == count) {
 
-          path = chooser.getSelectedFile().getAbsolutePath();
+        } else //for save
+        {
+            if (e.getSource() == save) {
+                String data = area.getText();
+                path = chooser.getSelectedFile().getAbsolutePath();
+                try {
+                    FileWriter myWriter = new FileWriter(path);
+                    // Writes this content into the specified file
+                    myWriter.write(data);
+                    // Closing is necessary to retrieve the resources allocated
+                    myWriter.close();
+                    JOptionPane.showMessageDialog(null, "Successfully wrote to the file.");
+                } catch (IOException ex) {
+                    System.out.println("An error occurred.");
+                }
+                //for Count
+            } else if (e.getSource() == count) {
 
-            try {
-                File file = new File(path);
-                BufferedReader reader = new BufferedReader(new FileReader(path));
-                Scanner readFile = new Scanner(file);
-                //initilizers
-                char ch;
-                int count = 0;
-                int aa = 0, ee = 0, ii = 0, oo = 0, uu = 0;
-                int consonants = 0;
-                int whitespaces = 0;
-                int sentence = 1;
-                String data = "";
-                while (readFile.hasNextLine()) {
-                    data = readFile.nextLine();
-                    for (int i = 0; i < data.length(); i++) {
-                        ch = data.charAt(i);
-                switch (ch) {
-                            case 'a':
-                            case 'A':
-                                aa++;
-                                break;
-                            case 'e':
-                            case 'E':
-                                ee++;
-                                break;
-                            case 'i':
-                            case 'I':
-                                ii++;
-                                break;
-                            case 'o':
-                            case 'O':
-                                oo++;
-                                break;
-                            case 'u':
-                            case 'U':
-                                uu++;
-                                break;
-                            case '.':
-                            case ',':
-                            case '!':
-                                sentence++;
-                                break;
-                        case 'b':case 'B':case 'c':case 'C':case 'd':case 'D':
-                        case 'f':case 'F':case 'g':case 'G':case 'h':case 'H':
-                        case 'j':case 'J':case 'k':case 'K':case 'l':case 'L':
-                        case 'm':case 'M':case 'n':case 'N':case 'p':case 'P':
-                        case 'q':case 'Q':case 'r':case 'R':case 's':case 'S':
-                        case 't':case 'T':case 'v':case 'V':case 'w':case 'W':
-                        case 'x':case 'X':case 'y':case 'Y':case 'z':case 'Z':
-                                consonants++;
-                            default:
-                                whitespaces++;
+                path = chooser.getSelectedFile().getAbsolutePath();
+
+                try {
+                    File file = new File(path);
+                    BufferedReader reader = new BufferedReader(new FileReader(path));
+                    Scanner readFile = new Scanner(file);
+                    //initilizers
+                    char ch;
+                    String data = "";
+                    while (readFile.hasNextLine()) {
+                        data = readFile.nextLine();
+                        for (int i = 0; i < data.length(); i++) {
+                            ch = data.charAt(i);
+                            switch (ch) {
+                                case 'a':
+                                case 'A':
+                                    aa++;
+                                    break;
+                                case 'e':
+                                case 'E':
+                                    ee++;
+                                    break;
+                                case 'i':
+                                case 'I':
+                                    ii++;
+                                    break;
+                                case 'o':
+                                case 'O':
+                                    oo++;
+                                    break;
+                                case 'u':
+                                case 'U':
+                                    uu++;
+                                    break;
+                                case '.':
+                                case ',':
+                                case '!':
+                                    sentence++;
+                                    break;
+                                case 'b':
+                                case 'B':
+                                case 'c':
+                                case 'C':
+                                case 'd':
+                                case 'D':
+                                case 'f':
+                                case 'F':
+                                case 'g':
+                                case 'G':
+                                case 'h':
+                                case 'H':
+                                case 'j':
+                                case 'J':
+                                case 'k':
+                                case 'K':
+                                case 'l':
+                                case 'L':
+                                case 'm':
+                                case 'M':
+                                case 'n':
+                                case 'N':
+                                case 'p':
+                                case 'P':
+                                case 'q':
+                                case 'Q':
+                                case 'r':
+                                case 'R':
+                                case 's':
+                                case 'S':
+                                case 't':
+                                case 'T':
+                                case 'v':
+                                case 'V':
+                                case 'w':
+                                case 'W':
+                                case 'x':
+                                case 'X':
+                                case 'y':
+                                case 'Y':
+                                case 'z':
+                                case 'Z':
+                                    consonants++;
+                                default:
+                                    whitespaces++;
+
+                            }
 
                         }
-
                     }
-                }
-                count = aa + ee + ii + oo + uu;
-                
-                System.out.println("Total number of a is " + aa);
-                System.out.println("Total number of e is " + ee);
-                System.out.println("Total number of i is " + ii);
-                System.out.println("Total number of o is " + oo);
-                System.out.println("Total number of u is " + uu);
+                    countVowels = aa + ee + ii + oo + uu;
 
-                System.out.println("Total number of Vowel is " + count);
+                    System.out.println("Total number of a is " + aa);
+                    System.out.println("Total number of e is " + ee);
+                    System.out.println("Total number of i is " + ii);
+                    System.out.println("Total number of o is " + oo);
+                    System.out.println("Total number of u is " + uu);
 
-                System.out.println("Total number of consonant is " + consonants);
-                System.out.println("\n\n\n");
+                    System.out.println("Total number of Vowel is " + countVowels);
 
-                String line;
+                    System.out.println("Total number of consonant is " + consonants);
+                    System.out.println("\n\n\n");
+
+                    String line;
 //         Initializing counters 
-                int countWord = 0;
-                int sentenceCount = 0;
-                int characterCount = 0;
-                int paragraphCount = 1;
-                int whitespaceCount = 0;
-//          
+
 //         Reading line by line from the  
 //         file until a null is returned 
-                while ((line = reader.readLine()) != null) {
+                    while ((line = reader.readLine()) != null) {
 
-                    if (line.equals("")) {
-                        paragraphCount++;
+                        if (line.equals("")) {
+                            paragraphCount++;
+                        }
+                        if (!(line.equals(""))) {
+                            characterCount += line.length();
+                            // \\s+ is the space delimiter in java 
+                            String[] wordList = line.split("\\s+");
+
+                            countWord += wordList.length;
+                            whitespaceCount += countWord - 1;
+
+                            // [!?.:]+ is the sentence delimiter in java programming
+                            String[] sentenceList = line.split("[!?.:]+");
+
+                            sentenceCount += sentenceList.length;
+                        }
                     }
-                    if (!(line.equals(""))) {
-                        characterCount += line.length();
-                        // \\s+ is the space delimiter in java 
-                        String[] wordList = line.split("\\s+");
-
-                        countWord += wordList.length;
-                        whitespaceCount += countWord - 1;
-
-                        // [!?.:]+ is the sentence delimiter in java programming
-                        String[] sentenceList = line.split("[!?.:]+");
-
-                        sentenceCount += sentenceList.length;
-                    }
-                }
 //          
-                System.out.println("Total word count = " + countWord);
-                System.out.println("Total number of characters = " + characterCount);
-                System.out.println("Number of paragraphs = " + paragraphCount);
-                System.out.println("Total number of whitespaces = " + whitespaceCount);
-                System.out.println("Total number of sentences = " + sentenceCount); 
-                String countResult = "Total number of a is = " + aa + "\n"
-                        + "Total number of e is = " + ee + "\n"
-                        + "Total number of i is = " + ii + "\n"
-                        + "Total number of o is = " + oo + "\n"
-                        + "Total number of u is = " + uu + "\n"
-                        + "---------------------------------------\n"
-                        + "Total number of Vowel is = " + count + "\n"
-                        + "---------------------------------------" + "\n"
-                        + "Total number of Consonants is = " + consonants + "\n"
-                        + "---------------------------------------\n\n"
-                        + "Total word count = " + countWord + "\n"
-                        + "---------------------------------------\n\n"
-                        + "Total number of characters = " + (characterCount-whitespaceCount) + "\n"//for pure character count we can also subtract whitespaces from it like 
-                        + "---------------------------------------\n\n"         //(characterCount-whitespaceCount) it will give us actual character without spaces
-                        + "Number of paragraphs = " + paragraphCount + "\n"
-                        + "---------------------------------------\n\n"
-                        + "Total number of whitespaces = " + whitespaceCount+"\n"
-                        +"---------------------------------------\n"
-                        +"Total number of sentences = " + sentenceCount+"\n"
-                        +"---------------------------------------\n";
-                resultArea.setText(countResult);
+                    System.out.println("Total word count = " + countWord);
+                    System.out.println("Total number of characters = " + characterCount);
+                    System.out.println("Number of paragraphs = " + paragraphCount);
+                    System.out.println("Total number of whitespaces = " + whitespaceCount);
+                    System.out.println("Total number of sentences = " + sentenceCount);
+                    String countResult = "Total number of a is = " + aa + "\n"
+                            + "Total number of e is = " + ee + "\n"
+                            + "Total number of i is = " + ii + "\n"
+                            + "Total number of o is = " + oo + "\n"
+                            + "Total number of u is = " + uu + "\n"
+                            + "---------------------------------------\n"
+                            + "Total number of Vowel is = " + countVowels + "\n"
+                            + "---------------------------------------" + "\n"
+                            + "Total number of Consonants is = " + consonants + "\n"
+                            + "---------------------------------------\n\n"
+                            + "Total word count = " + countWord + "\n"
+                            + "---------------------------------------\n\n"
+                            + "Total number of characters = " + (characterCount - whitespaceCount) + "\n"//for pure character count we can also subtract whitespaces from it like 
+                            + "---------------------------------------\n\n" //(characterCount-whitespaceCount) it will give us actual character without spaces
+                            + "Number of paragraphs = " + paragraphCount + "\n"
+                            + "---------------------------------------\n\n"
+                            + "Total number of whitespaces = " + whitespaceCount + "\n"
+                            + "---------------------------------------\n"
+                            + "Total number of sentences = " + sentenceCount + "\n"
+                            + "---------------------------------------\n";
+                    resultArea.setText(countResult);
 //        
-                String sentences = reader.readLine();
-                while (sentences != null) {
-                    System.out.println(sentence);
-                    sentences = reader.readLine();
+                    String sentences = reader.readLine();
+                    while (sentences != null) {
+                        System.out.println(sentence);
+                        sentences = reader.readLine();
+
+                    }
+
+                } catch (IOException ex) {
+                    System.err.println("Sorry Error Occured");
+                    JOptionPane.showMessageDialog(null, "Something went wrong");
+                }
+            } else if (e.getSource() == database) {
+
+                try {
+                    Connection conn = null;
+                    Statement stmnt = null;
+
+                    Class.forName("com.mysql.jdbc.Driver");
+                    //getConnection(server,username,passwrd)
+                    conn = DriverManager.getConnection("jdbc:mysql://localhost/countdata", "root", "");
+
+                    stmnt = conn.createStatement();
+
+                    String sqlQuery1 = "INSERT INTO VowelsConsonentsCount (vowels,consonents) VALUES ('" + countVowels + "','" + consonants + "')";
+                    String sqlQuery2 = "INSERT INTO countinfo (info) VALUES ('" + resultArea.getText() + "')";
+                    String sqlQuery3 = "INSERT INTO otherwordscount (sentencecount,wcount,charcount,wspacecount) VALUES ('" + sentenceCount + "','" + countWord + "','" + characterCount + "','" + whitespaceCount + "')";
+
+                    stmnt.executeUpdate(sqlQuery1);
+                    stmnt.executeUpdate(sqlQuery2);
+                    stmnt.executeUpdate(sqlQuery3);
+
+                    System.out.println("database updated");
+
+                } catch (Exception ex) {
+
+                    JOptionPane.showMessageDialog(null, "Sorry some Error Occured");
 
                 }
 
-            } catch (IOException ex)
-            {
-                System.err.println("Sorry Error Occured");
-                JOptionPane.showMessageDialog(null,"Something went wrong");
             }
         }
     }
 }
+
